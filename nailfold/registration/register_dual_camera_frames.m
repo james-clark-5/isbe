@@ -28,6 +28,7 @@ function [] = register_dual_camera_frames(frames_dir, camera1_transforms, camera
 args = u_packargs(varargin, '0', ...
     'camera1_ext', '_C_1_',...
     'camera2_ext', '_C_2_',...
+    'camera_filter', '? nm',... %sets the default value
     'image_format', 'bmp',...
     'save_images', 1,...
     'save_dir', [], ...
@@ -203,13 +204,13 @@ for i_rng = 1:num_ranges
         
         figure;
         subplot(1,2,1); imgray(mosaic_rgb);
-        title('Non-overlapping compound frames pre-registration');
+        title(sprintf('Non-overlapping compound frames pre-registration, %d nm', args.camera_filter));
         subplot(1,2,2); imgray(reg_mosaic_rgb);
-        title('Aligned compound frames after registration');
+        title(sprintf('Aligned compound frames after registration, %d nm', args.camera_filter));
         
         figure;
         imgray(registered_difference);
-        title('Difference between compound frames (1 - 2)');
+        title(sprintf('Difference between compound frames, %d nm filter', args.camera_filter));
         colormap jet;
         colorbar;
     end

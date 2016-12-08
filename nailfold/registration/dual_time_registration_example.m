@@ -9,12 +9,15 @@ addpath(genpath('C:\Users\MPhys2016\Documents\GitHub\isbe'));
 %Set folder containing all the frames
 frames_dir = 'C:\isbe\nailfold\camera_capture\dual_cameras\Finite microscope\Two Cameras\3-light\cuffing\16.11.22 - 530 550 nm - g1 1023, g2 260, exp 76.6 + dirt image\530 nm t_compare_t0_t2\';
 
+%jj wavelength of filter for images
+filter_wavelength = 530; %jj change this when filter changes
+
 %Make dirt image
 %You want to use the (out-of-focus) frames you captured especially for this
 dirty_dir = 'C:\isbe\nailfold\camera_capture\dual_cameras\Finite microscope\Two Cameras\3-light\cuffing\16.11.22 - 530 550 nm - g1 1023, g2 260, exp 76.6 + dirt image\530 nm dirt image\'; %
 [dirt_image] = make_dirt_image(dirty_dir);
 figure; imgray(dirt_image); colorbar;
-
+title(sprintf('Normalised compound dirt image for %d nm filter', filter_wavelength));
 %Prepare the frames - I've included all the optional arguments below with
 %their default values, you shouldn't need to change these, but you might
 %want to:
@@ -56,6 +59,7 @@ t2_transforms = u_load([frames_dir 'transforms\time2_reg_transforms.mat']);
 %not match up)
 register_dual_camera_frames([frames_dir 'corrections\'],...
     t1_transforms, t2_transforms, [1 60], 'frames',...
+    'camera_filter', filter_wavelength,... % change this appropriately
     'camera1_ext', '_t0_',...
     'camera2_ext', '_t2_',...
     'image_format', 'bmp',...
