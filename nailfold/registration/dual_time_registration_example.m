@@ -1,20 +1,18 @@
 %Example script for preparing and the registering frames captured from the
 %dual camera system
 
-% jj testing git
-
 %jj tell the code where to look for called files
 addpath(genpath('C:\Users\MPhys2016\Documents\GitHub\isbe'));
 
 %Set folder containing all the frames
-frames_dir = 'C:\isbe\nailfold\camera_capture\dual_cameras\Finite microscope\Two Cameras\3-light\cuffing\16.11.22 - 530 550 nm - g1 1023, g2 260, exp 76.6 + dirt image\530 nm t_compare_t0_t2\';
+frames_dir = 'C:\isbe\nailfold\camera_capture\dual_cameras\Finite microscope\Two Cameras\3-light\cuffing\16.11.22 - 530 550 nm - g1 1023, g2 260, exp 76.6\550 nm t_compare_t0_t2\';
 
 %jj wavelength of filter for images
-filter_wavelength = 530; %jj change this when filter changes
+filter_wavelength = 550; %jj change this when filter changes
 
 %Make dirt image
 %You want to use the (out-of-focus) frames you captured especially for this
-dirty_dir = 'C:\isbe\nailfold\camera_capture\dual_cameras\Finite microscope\Two Cameras\3-light\cuffing\16.11.22 - 530 550 nm - g1 1023, g2 260, exp 76.6 + dirt image\530 nm dirt image\'; %
+dirty_dir = 'C:\isbe\nailfold\camera_capture\dual_cameras\Finite microscope\Two Cameras\3-light\cuffing\16.11.22 - 530 550 nm - g1 1023, g2 260, exp 76.6\550 nm dirt image\'; %
 [dirt_image] = make_dirt_image(dirty_dir);
 figure; imgray(dirt_image); colorbar;
 title(sprintf('Normalised compound dirt image for %d nm filter', filter_wavelength));
