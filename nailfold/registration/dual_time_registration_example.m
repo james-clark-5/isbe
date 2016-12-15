@@ -5,17 +5,29 @@
 addpath(genpath('C:\Users\MPhys2016\Documents\GitHub\isbe'));
 
 %Set folder containing all the frames
-frames_dir = 'C:\isbe\nailfold\camera_capture\dual_cameras\Finite microscope\Two Cameras\3-light\cuffing\16.11.22 - 530 550 nm - g1 1023, g2 260, exp 76.6\550 nm t_compare_t0_t2\';
+frames_dir = 'C:\Users\MPhys2016\Desktop\cuffing\16.12.13 - 530 560 nm - gains 830 exp 64.37\16.12.13 - 560 nm t0t2\';
+
+%jj attempt to create folder to save images to
+mkdir(frames_dir,'OurSavedImages')
+%OurSavedImages_dir = frames_dir '\OurSavedImages\';
+%if (isempty('Our Saved Images2'));
+%create_folder([frames_dir 'Our Saved Images2\']);
+%end
+%create_folder('Our Saved Images2');
+%OurSavedImagesDir = frames_dir\
 
 %jj wavelength of filter for images
-filter_wavelength = 550; %jj change this when filter changes
+filter_wavelength = 560; %jj change this when filter changes
 
 %Make dirt image
 %You want to use the (out-of-focus) frames you captured especially for this
-dirty_dir = 'C:\isbe\nailfold\camera_capture\dual_cameras\Finite microscope\Two Cameras\3-light\cuffing\16.11.22 - 530 550 nm - g1 1023, g2 260, exp 76.6\550 nm dirt image\'; %
+dirty_dir = 'C:\Users\MPhys2016\Desktop\cuffing\16.12.13 - 530 560 nm - gains 830 exp 64.37\16.12.13 - 560 nm dirt\'; %
 [dirt_image] = make_dirt_image(dirty_dir);
 figure; imgray(dirt_image); colorbar;
 title(sprintf('Normalised compound dirt image for %d nm filter', filter_wavelength));
+%jj save this image as a .png and as a .fig (MatLab file)
+%imwrite(img,OurSavedImages_dir,'jpg')
+
 %Prepare the frames - I've included all the optional arguments below with
 %their default values, you shouldn't need to change these, but you might
 %want to:
