@@ -5,6 +5,7 @@
 addpath(genpath('C:\Users\MPhys2016\Documents\GitHub\isbe'));
 
 %Set folder containing all the frames
+<<<<<<< HEAD
 frames_dir = 'C:\Users\MPhys2016\Desktop\cuffing\16.12.13 - 530 560 nm - gains 830 exp 64.37\16.12.13 - 560 nm t0t2\';
 
 %jj attempt to create folder to save images to
@@ -15,6 +16,10 @@ mkdir(frames_dir,'OurSavedImages')
 %end
 %create_folder('Our Saved Images2');
 %OurSavedImagesDir = frames_dir\
+=======
+frames_dir = 'C:\isbe\nailfold\camera_capture\dual_cameras\Finite microscope\Two Cameras\3-light\cuffing\16.11.22 - 530 550 nm - g1 1023, g2 260, exp 76.6\550 nm t_compare_t0_t2\';
+mkdir(frames_dir,'Our Saved Images')
+>>>>>>> origin/master
 
 %jj wavelength of filter for images
 filter_wavelength = 560; %jj change this when filter changes
@@ -25,8 +30,20 @@ dirty_dir = 'C:\Users\MPhys2016\Desktop\cuffing\16.12.13 - 530 560 nm - gains 83
 [dirt_image] = make_dirt_image(dirty_dir);
 figure; imgray(dirt_image); colorbar;
 title(sprintf('Normalised compound dirt image for %d nm filter', filter_wavelength));
+<<<<<<< HEAD
 %jj save this image as a .png and as a .fig (MatLab file)
 %imwrite(img,OurSavedImages_dir,'jpg')
+=======
+
+% jj save the file as a .fig, .emf, and a .png
+dirtimg_name = fullfile(frames_dir, 'Our Saved Images', 'dirt.fig');
+imwrite(img, dirtimg_name, 'fig')
+dirtimg_name = fullfile(frames_dir, 'Our Saved Images', 'dirt.emf');
+imwrite(img, dirtimg_name, 'emf')
+dirtimg_name = fullfile(frames_dir, 'Our Saved Images', 'dirt.png');
+imwrite(img, dirtimg_name, 'png')
+
+>>>>>>> origin/master
 
 %Prepare the frames - I've included all the optional arguments below with
 %their default values, you shouldn't need to change these, but you might
