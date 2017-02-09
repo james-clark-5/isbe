@@ -27,8 +27,8 @@ function [] = prepare_dual_camera_frames(frames_dir, varargin)
 
 % Unpack the arguments:
 args = u_packargs(varargin, '0', ...
-    'camera1_ext', '_C_1_',...
-    'camera2_ext', '_C_2_',...
+    'camera1_ext', '_C_560_',... %jj changed this for Dual Camera
+    'camera2_ext', '_C_530_',...
     'image_format', 'bmp',...
     'rotated_dir', [], ...
     'rotation1', 1,...
@@ -82,8 +82,8 @@ create_folder(reg_dir);
 
 %%-------------------------------------------------------------------------
 % Get list of frame names
-camera1_frame_names = dir_to_file_list([frames_dir '*' args.camera1_ext '*.' args.image_format]);
-camera2_frame_names = dir_to_file_list([frames_dir '*' args.camera2_ext '*.' args.image_format]);
+camera1_frame_names = dir_to_file_list([frames_dir '*' args.camera1_ext '*.' args.image_format], []);
+camera2_frame_names = dir_to_file_list([frames_dir '*' args.camera2_ext '*.' args.image_format], []);
 
 num_frames1 = length(camera1_frame_names);
 num_frames2 = length(camera2_frame_names);
@@ -118,7 +118,8 @@ num_frames = num_frames1; clear num_frames1 num_frames2;
 % Flip all the frames from camera 2, and rotate all the frames from both
 % cameras
 for i_frame = 1:num_frames
-    
+    % JJ: frame_names includes folder structure, so don't need frames_dir?
+    % JJ: frame_name needs to have folder structure removed from it
     frame1 = imread([frames_dir camera1_frame_names{i_frame}]);    
     frame2 = imread([frames_dir camera2_frame_names{i_frame}]);
     

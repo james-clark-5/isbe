@@ -26,8 +26,8 @@ function [] = register_dual_camera_frames(frames_dir, camera1_transforms, camera
 % Copyright: (C) University of Manchester 
 % Unpack the arguments:
 args = u_packargs(varargin, '0', ...
-    'camera1_ext', '_C_1_',...
-    'camera2_ext', '_C_2_',...
+    'camera1_ext', '_C_560_',... %jj changed this for Dual Camera
+    'camera2_ext', '_C_530_',...
     'camera_filter', '? nm',... %sets the default value
     'image_format', 'bmp',...
     'save_images', 1,...
@@ -49,8 +49,8 @@ end
 
 %%-------------------------------------------------------------------------
 % Get list of frame names
-camera1_frame_names = dir_to_file_list([frames_dir '*' args.camera1_ext '*.' args.image_format]);
-camera2_frame_names = dir_to_file_list([frames_dir '*' args.camera2_ext '*.' args.image_format]);
+camera1_frame_names = dir_to_file_list([frames_dir '*' args.camera1_ext '*.' args.image_format], []);
+camera2_frame_names = dir_to_file_list([frames_dir '*' args.camera2_ext '*.' args.image_format], []);
 
 num_frames1 = length(camera1_frame_names);
 num_frames2 = length(camera2_frame_names);
