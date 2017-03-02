@@ -1,4 +1,4 @@
-function [] = register_dual_camera_frames(frames_dir, camera1_transforms, camera2_transforms, ranges, range_type, varargin)
+function [] = register_time_camera_frames(frames_dir, camera1_transforms, camera2_transforms, ranges, range_type, varargin)
 %REGISTER_DUAL_CAMERA_FRAMES *Insert a one line summary here*
 %   [] = register_dual_camera_frames(varargin)
 %
@@ -11,6 +11,9 @@ function [] = register_dual_camera_frames(frames_dir, camera1_transforms, camera
 %
 % Optional Arguments:
 %
+    %jj change this appropriately
+        camera_filter = 500;
+
 % Outputs:
 %
 % Example:
@@ -26,9 +29,10 @@ function [] = register_dual_camera_frames(frames_dir, camera1_transforms, camera
 % Copyright: (C) University of Manchester 
 % Unpack the arguments:
 args = u_packargs(varargin, '0', ...
-    'camera1_ext', '_t2_',... %jj changed this for Dual Camera
-    'camera2_ext', '_tf_',...
-    'camera_filter', '? nm',... %sets the default value
+    'camera1_ext', '_C_1_',...
+    'camera2_ext', '_C_2_',...
+    'correction_factor', 1,... % default factor of 1. 500nm overrrides this w/ 1.6
+    'camera_filter', 'nm',... 
     'image_format', 'bmp',...
     'save_images', 1,...
     'save_dir', [], ...
@@ -49,8 +53,8 @@ end
 
 %%-------------------------------------------------------------------------
 % Get list of frame names
-camera1_frame_names = dir_to_file_list([frames_dir '*' args.camera1_ext '*.' args.image_format], []);
-camera2_frame_names = dir_to_file_list([frames_dir '*' args.camera2_ext '*.' args.image_format], []);
+camera1_frame_names = dir_to_file_list([frames_dir '*' args.camera1_ext '*.' args.image_format]);
+camera2_frame_names = dir_to_file_list([frames_dir '*' args.camera2_ext '*.' args.image_format]);
 
 num_frames1 = length(camera1_frame_names);
 num_frames2 = length(camera2_frame_names);
@@ -202,15 +206,21 @@ for i_rng = 1:num_ranges
         reg_mosaic_rgb(~registered_masks) = 0;
         reg_mosaic_rgb(:,:,3) = 0;
         
+        % jj don't seem to be applying correction factor twice
+        mosaic_rgb = mosaic_rgb * args.correction_factor; % jj apply correction factor
+        reg_mosaic_rgb = reg_mosaic_rgb * args.correction_factor; % jj apply correction factor
+        registered_difference = registered_difference * args.correction_factor; % jj apply correction factor
+        
         figure;
         subplot(1,2,1); imgray(mosaic_rgb);
-        title(sprintf('Non-overlapping compound frames pre-registration, %d nm', args.camera_filter));
+        %"camera_filter" stores the wavelength variable
+        title(sprintf('Non-overlapping compound frames pre-registration for %d nm filter', camera_filter));
         subplot(1,2,2); imgray(reg_mosaic_rgb);
-        title(sprintf('Aligned compound frames after registration, %d nm', args.camera_filter));
+        title(sprintf('Aligned compound frames after registration for %d nm filter', camera_filter));
         
         figure;
         imgray(registered_difference);
-        title(sprintf('Difference between compound frames, %d nm filter', args.camera_filter));
+        title(sprintf('Difference between compound frames for %d nm filter', camera_filter));
         colormap jet;
         colorbar;
     end
