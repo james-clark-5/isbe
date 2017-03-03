@@ -11,9 +11,6 @@ function [] = register_time_camera_frames(frames_dir, camera1_transforms, camera
 %
 % Optional Arguments:
 %
-    %jj change this appropriately
-        camera_filter = 500;
-
 % Outputs:
 %
 % Example:
@@ -31,8 +28,9 @@ function [] = register_time_camera_frames(frames_dir, camera1_transforms, camera
 args = u_packargs(varargin, '0', ...
     'camera1_ext', '_C_1_',...
     'camera2_ext', '_C_2_',...
-    'correction_factor', 1,... % default factor of 1. 500nm overrrides this w/ 1.6
-    'camera_filter', 'nm',... 
+    'correction_factor', 1,... % jj default factor of 1. 500nm overrrides this w/ 1.6
+    'trial_number', 'trial number N' ,... % jj default trial number unknown
+    'camera_filter', 'X nm',... 
     'image_format', 'bmp',...
     'save_images', 1,...
     'save_dir', [], ...
@@ -214,13 +212,13 @@ for i_rng = 1:num_ranges
         figure;
         subplot(1,2,1); imgray(mosaic_rgb);
         %"camera_filter" stores the wavelength variable
-        title(sprintf('Non-overlapping compound frames pre-registration for %d nm filter', camera_filter));
+        title(sprintf('Non-overlapping compound frames pre-registration for %d nm filter, part of trial number %d', args.camera_filter,args.trial_number));
         subplot(1,2,2); imgray(reg_mosaic_rgb);
-        title(sprintf('Aligned compound frames after registration for %d nm filter', camera_filter));
+        title(sprintf('Aligned compound frames after registration for %d nm filter (same trial)', args.camera_filter));
         
         figure;
         imgray(registered_difference);
-        title(sprintf('Difference between compound frames for %d nm filter', camera_filter));
+        title(sprintf('Difference between compound frames for %d nm filter, part of trial number %d', args.camera_filter,args.trial_number));
         colormap jet;
         colorbar;
     end

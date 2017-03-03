@@ -1,6 +1,11 @@
 %Example script for preparing and the registering frames captured from the
 %dual camera system
 
+fprintf('Did you change the frames to be loaded in? ~ line 11\n');
+fprintf('Did you specify which wavelength is being analysed? ~ line 23\n');
+fprintf('Did you specify which trial is being analysed? ~ line 24\n');
+fprintf('Did you change the dirt frames folder? ~ line 32\n');
+
 %jj tell the code where to look for called files
 addpath(genpath('C:\Users\MPhys2016\Documents\GitHub\isbe'));
 
@@ -18,13 +23,15 @@ frames_dir = 'C:\Users\MPhys2016\Desktop\17.02.27 occlusion compare 530 500\17.0
 %% 
 %jj wavelength of filter for images
 filter_wavelength = 500; %jj change this when filter changes
+trial_number = 1;
+
 
 %Make dirt image
 %You want to use the (out-of-focus) frames you captured especially for this
 dirty_dir = 'C:\Users\MPhys2016\Desktop\17.02.27 occlusion compare 530 500\17.02.27 - 560 500 - exp60.04 g718\17.02.27 - exp60.04 g718 - 500 cam2 dirt\'; %
 [dirt_image] = make_dirt_image(dirty_dir);
 figure; imgray(dirt_image); colorbar;
-title(sprintf('Normalised compound dirt image for %d nm filter', filter_wavelength));
+title(sprintf('Normalised compound dirt image for %d nm filter, part of trial %d', filter_wavelength,trial_number));
 
 % jj save the file as a .fig, .emf, and a .png
 % dirtimg_name = fullfile(frames_dir, 'Our Saved Images', 'dirt.fig');
@@ -75,10 +82,10 @@ t2_transforms = u_load([frames_dir 'transforms\time2_reg_transforms.mat']);
 %not match up)
 register_time_camera_frames([frames_dir 'corrections\'],...
     t1_transforms, t2_transforms, [1 60], 'frames',...
-    'camera_filter', filter_wavelength,... % jj change this appropriately
+    'camera_filter', filter_wavelength,... % jj change this in ~ line 25
     'camera1_ext', '_t0_',...
     'camera2_ext', '_t2_',...
-    'correction_factor', 1.6,... % this is specific to 500nm. factor of 1 for 560/530
+    'correction_factor', 1.6,... % jj this is specific to 500nm. factor of 1 for 560/530 is default
     'image_format', 'bmp',...
     'theta_range', 0,...
     'offset_range', 240,...
