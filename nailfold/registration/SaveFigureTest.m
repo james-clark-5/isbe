@@ -8,6 +8,7 @@ testFileDirectory = 'C:\Users\James\Desktop\';
 %fileNameNoRegister = 'Unregistered image';
 fullfile = fullfile(testFileDirectory, 'Unregistered image');
 fig = plot(x,y);
+title('titleTEST');
 saveas(fig, fullfile, 'bmp'); %bmp
 saveas(fig, fullfile, 'meta'); %emf 
 saveas(fig, fullfile, 'fig'); %fig
