@@ -12,7 +12,7 @@ function [] = register_time_camera_frames(frames_dir, camera1_transforms, camera
 % Optional Arguments:
 %
     %jj change this appropriately
-        camera_filter = 500;
+        camera_filter = 560;
 
 % Outputs:
 %
@@ -207,8 +207,9 @@ for i_rng = 1:num_ranges
         reg_mosaic_rgb(:,:,3) = 0;
         
         % jj don't seem to be applying correction factor twice
-        mosaic_rgb = mosaic_rgb * args.correction_factor; % jj apply correction factor
-        reg_mosaic_rgb = reg_mosaic_rgb * args.correction_factor; % jj apply correction factor
+        %mosaic_rgb = mosaic_rgb * args.correction_factor; % jj apply correction factor
+        %reg_mosaic_rgb = reg_mosaic_rgb * args.correction_factor; % jj apply correction factor
+             % didn't want to apply the correction here actually - registration comparison washed out  
         registered_difference = registered_difference * args.correction_factor; % jj apply correction factor
         
         figure;
