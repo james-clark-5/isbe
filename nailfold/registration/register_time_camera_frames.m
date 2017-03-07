@@ -11,9 +11,12 @@ function [] = register_time_camera_frames(frames_dir, camera1_transforms, camera
 %
 % Optional Arguments:
 %
+<<<<<<< HEAD
     %jj change this appropriately
         camera_filter = 560;
 
+=======
+>>>>>>> origin/master
 % Outputs:
 %
 % Example:
@@ -31,8 +34,10 @@ function [] = register_time_camera_frames(frames_dir, camera1_transforms, camera
 args = u_packargs(varargin, '0', ...
     'camera1_ext', '_C_1_',...
     'camera2_ext', '_C_2_',...
-    'correction_factor', 1,... % default factor of 1. 500nm overrrides this w/ 1.6
-    'camera_filter', 'nm',... 
+    'frames_dir', '',... %%jj frames directory, to save images to
+    'correction_factor', 1,... % jj default factor of 1. 500nm overrrides this w/ 1.6
+    'trial_number', 'trial number N' ,... % jj default trial number unknown
+    'camera_filter', 'X nm',... 
     'image_format', 'bmp',...
     'save_images', 1,...
     'save_dir', [], ...
@@ -212,18 +217,43 @@ for i_rng = 1:num_ranges
              % didn't want to apply the correction here actually - registration comparison washed out  
         registered_difference = registered_difference * args.correction_factor; % jj apply correction factor
         
-        figure;
-        subplot(1,2,1); imgray(mosaic_rgb);
-        %"camera_filter" stores the wavelength variable
-        title(sprintf('Non-overlapping compound frames pre-registration for %d nm filter', camera_filter));
-        subplot(1,2,2); imgray(reg_mosaic_rgb);
-        title(sprintf('Aligned compound frames after registration for %d nm filter', camera_filter));
         
+        %% registration images
+        figure; 
+        subplot(1,2,1); non_registered_image = imgray(mosaic_rgb); 
+        title(sprintf('Non-overlapping compound frames pre-registration for %d nm filter, part of trial number %d', args.camera_filter,args.trial_number));
+
+        % Save the unregistered image
+        fullfile_unreg = fullfile(args.frames_dir, '_Unregistered image'); 
+        saveas(non_registered_image, fullfile_unreg, 'bmp'); %bmp
+        saveas(non_registered_image, fullfile_unreg, 'meta'); %emf 
+        saveas(non_registered_image, fullfile_unreg, 'fig'); %fig
+        
+        subplot(1,2,2); registered_image = imgray(reg_mosaic_rgb);
+        title(sprintf('Aligned compound frames after registration for %d nm filter (same trial)', args.camera_filter));
+        % Save the registered image
+        fullfile_reg = fullfile(args.frames_dir, '_Registered image');
+        saveas(registered_image, fullfile_reg, 'bmp'); %bmp
+        saveas(registered_image, fullfile_reg, 'meta'); %emf 
+        saveas(registered_image, fullfile_reg, 'fig'); %fig
+
+        %% difference image
+        % NOT SURE IF THIS WILL WORK WITH COLORMAP & COLORBAR
         figure;
-        imgray(registered_difference);
-        title(sprintf('Difference between compound frames for %d nm filter', camera_filter));
+        difference_image = imgray(registered_difference);
+        title(sprintf('Difference between compound frames for %d nm filter, part of trial number %d', args.camera_filter,args.trial_number));
         colormap jet;
         colorbar;
+        % Save the difference image
+        fullfile_dif = fullfile(args.frames_dir, '_Difference image');
+        saveas(difference_image, fullfile_dif, 'bmp'); %bmp
+        saveas(difference_image, fullfile_dif, 'meta'); %emf 
+        saveas(difference_image, fullfile_dif, 'fig'); %fig
+        
+        %% max and min of difference image
+        % NOT SURE IF THIS WILL WORK WITH COLORMAP & COLORBAR
+        fprintf('Max of dif_image: %d\nMin of dif_image: %d\n',max(max(difference_image)),min(min(difference_image)));
+
     end
 end
                             
