@@ -1,9 +1,4 @@
 % Script to find the mean brightness of registered difference images
-% place this file in a folder with a trial's t0't0, t0t1, t0t2, etc. etc.
-% requires you to have already run the dual_time_registration_example.m
-% code, to 1) clean, 2) register, 3) difference the images. This uses a
-% saved .mat file to get the mean brightness in the difference image
-
 %ignore this dodgy lazy hack
 clear all;
 close all;
@@ -39,13 +34,17 @@ while iFolders<numFolders+1
     % remove NaN from data
     reg_dif_double(isnan(reg_dif_double)) = [];
     % take mean brightness of dif_image
-    mean_brightness = mean(mean(reg_dif_double));        
+    mean_brightness = mean(mean(reg_dif_double));     
+    max_brightness = max(reg_dif_double);
+    min_brightness = min(reg_dif_double);
         
         
         %Save mean of means & s.d. to array (one pair of values for each folder of images)
         current_dir=num2str(cell2mat(current_frames_dir));
         mean_array(iFolders)= mean_brightness;
-        current_dir_array{iFolders}=current_dir;     
+        current_dir_array{iFolders}=current_dir;  
+        max_brightness_array(iFolders)=max_brightness;
+        min_brightness_array(iFolders)=min_brightness;
         
         iFolders = iFolders + 1;
 end
@@ -53,7 +52,7 @@ end
 current_dir_array = current_dir_array';
 mean_array = mean_array';
 % merge folders and mean values into 1 cell
-trial_and_mean_cell = [current_dir_array, num2cell(mean_array)];
+trial__mean_max_min_cell = [current_dir_array, num2cell(mean_array),num2cell(max_brightness_array'),num2cell(min_brightness_array')];
 
 % all done
 fprintf('program has finished running!');
