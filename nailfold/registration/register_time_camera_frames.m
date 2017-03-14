@@ -11,12 +11,6 @@ function [] = register_time_camera_frames(frames_dir, camera1_transforms, camera
 %
 % Optional Arguments:
 %
-<<<<<<< HEAD
-    %jj change this appropriately
-        camera_filter = 560;
-
-=======
->>>>>>> origin/master
 % Outputs:
 %
 % Example:
@@ -221,7 +215,7 @@ for i_rng = 1:num_ranges
         %% registration images
         figure; 
         subplot(1,2,1); non_registered_image = imgray(mosaic_rgb); 
-        title(sprintf('Non-overlapping compound frames pre-registration for %d nm filter, part of trial number %d', args.camera_filter,args.trial_number));
+        title(sprintf('Non-overlapping compound frames pre-registration for %d nm filter', args.camera_filter));
 
         % Save the unregistered image
         fullfile_unreg = fullfile(args.frames_dir, '_Unregistered image'); 
@@ -230,7 +224,7 @@ for i_rng = 1:num_ranges
         saveas(non_registered_image, fullfile_unreg, 'fig'); %fig
         
         subplot(1,2,2); registered_image = imgray(reg_mosaic_rgb);
-        title(sprintf('Aligned compound frames after registration for %d nm filter (same trial)', args.camera_filter));
+        title(sprintf('Aligned compound frames after registration for %d nm filter', args.camera_filter));
         % Save the registered image
         fullfile_reg = fullfile(args.frames_dir, '_Registered image');
         saveas(registered_image, fullfile_reg, 'bmp'); %bmp
@@ -241,7 +235,7 @@ for i_rng = 1:num_ranges
         % NOT SURE IF THIS WILL WORK WITH COLORMAP & COLORBAR
         figure;
         difference_image = imgray(registered_difference);
-        title(sprintf('Difference between compound frames for %d nm filter, part of trial number %d', args.camera_filter,args.trial_number));
+        title(sprintf('Difference between compound frames for %d nm filter', args.camera_filter));
         colormap jet;
         colorbar;
         % Save the difference image
@@ -252,7 +246,7 @@ for i_rng = 1:num_ranges
         
         %% max and min of difference image
         % NOT SURE IF THIS WILL WORK WITH COLORMAP & COLORBAR
-        fprintf('Max of dif_image: %d\nMin of dif_image: %d\n',max(max(difference_image)),min(min(difference_image)));
+        %fprintf('Max of dif_image: %d\nMin of dif_image: %d\n',max(max(difference_image)),min(min(difference_image)));
 
     end
 end

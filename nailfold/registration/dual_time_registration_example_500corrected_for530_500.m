@@ -2,15 +2,15 @@
 %dual camera system
 
 fprintf('Did you change the frames to be loaded in? ~ line 11\n');
-fprintf('Did you specify which wavelength is being analysed? ~ line 23\n');
-fprintf('Did you specify which trial is being analysed? ~ line 24\n');
+%fprintf('Did you specify which wavelength is being analysed? ~ line 23\n');
+%fprintf('Did you specify which trial is being analysed? ~ line 24\n');
 fprintf('Did you change the dirt frames folder? ~ line 32\n');
 
 %jj tell the code where to look for called files
 addpath(genpath('C:\Users\MPhys2016\Documents\GitHub\isbe'));
 
 %Set folder containing all the frames
-frames_dir = 'C:\Users\MPhys2016\Desktop\Occlusion compare 530 500\17.03.02 occlusion compare 560 530 500 - 500 correction factor applied\Juliana trial 2 560 500\17.03.02 - exp60.04 g762 - 500 cam2 - t0primet0\';
+frames_dir = 'C:\Users\MPhys2016\Desktop\Occlusion compare 530 500\17.03.07 occlusion compare 530 500\trial 10 jam LH fing4\17.03.07 - exp60.04 g860 - 500 cam2 - t2tf2\';
 
 %% jj attempt to create folder to save images to
 % mkdir(frames_dir,'OurSavedImages')
@@ -23,11 +23,11 @@ frames_dir = 'C:\Users\MPhys2016\Desktop\Occlusion compare 530 500\17.03.02 occl
 %% 
 %jj wavelength of filter for images
 filter_wavelength = 500; %jj DON'T CHANGE THIS. This code is for 500 nm filter ONLY.
-%trial_number = 1;
+trial_number = 1;
 
 %Make dirt image
 %You want to use the (out-of-focus) frames you captured especially for this
-dirty_dir = 'C:\Users\MPhys2016\Desktop\Occlusion compare 530 500\17.03.02 occlusion compare 560 530 500 - 500 correction factor applied\Juliana trial 2 560 500\17.03.02 500 cam2 dirt\';
+dirty_dir = 'C:\Users\MPhys2016\Desktop\Occlusion compare 530 500\17.03.07 occlusion compare 530 500\trial 10 jam LH fing4\17.03.07 500 nm cam 2 dirt/';
 [dirt_image] = make_dirt_image(dirty_dir);
 figure; imgray(dirt_image); colorbar;
 title(sprintf('Normalised compound dirt image for %d nm filter, part of trial %d', filter_wavelength,trial_number));
@@ -57,8 +57,8 @@ title(sprintf('Normalised compound dirt image for %d nm filter, part of trial %d
 % watching the registration in real-time to check frames are being matched
 % appropriately
 prepare_sequential_camera_frames(frames_dir, ... 
-    'time1_ext', '_t0prime_',...
-    'time2_ext', '_t0_',...
+    'time1_ext', '_t2_',...
+    'time2_ext', '_tf_',...
     'image_format', 'bmp',...
     'dirt_image', dirt_image,...
     'theta_range', 0,...
@@ -81,10 +81,10 @@ t2_transforms = u_load([frames_dir 'transforms\time2_reg_transforms.mat']);
 %not match up)
 register_time_camera_frames([frames_dir 'corrections\'],...
     t1_transforms, t2_transforms, [1 60], 'frames',...
-    'camera_filter', filter_wavelength,... 
-    'camera1_ext', '_t0prime_',...
-    'camera2_ext', '_t0_',...
-    'correction_factor', 1.6,... % this is specific to 500nm. factor of 1 for 560/530
+    'camera_filter', filter_wavelength,... % jj change this appropriately
+    'camera1_ext', '_t2_',...
+    'camera2_ext', '_tf_',...
+    'correction_factor', 0.88,... % this is specific to 500nm. factor of 1 for 560/530
     'frames_dir', frames_dir,... % jj pass the frames dir, to save final images to
     'trial_number', trial_number,... % jj update figures saying which trial images are from
     'image_format', 'bmp',...
