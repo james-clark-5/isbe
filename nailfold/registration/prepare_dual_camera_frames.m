@@ -180,7 +180,7 @@ function prepare_frames(camera1_frame_names, camera2_frame_names, ...
 % 4) Recompute the diff image, and update the corrected frames
 
 %Load in first frame from camera 1
-frame1 = imread([rotated_dir camera1_frame_names{1}]);
+frame1 = imread([rotated_dir camera1_frame_names{1}]); 
 
 %Pre-allocate storage for frames from camera 2 and transforms 
 [nrows ncols] = size(frame1);

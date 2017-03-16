@@ -1,4 +1,4 @@
-function [] = register_time_camera_frames(frames_dir, camera1_transforms, camera2_transforms, ranges, range_type, varargin)
+function [] = register_time_camera_frames(frames_dir, camera1_transforms, camera2_transforms, ranges1, ranges2, range_type, varargin)
 %REGISTER_DUAL_CAMERA_FRAMES *Insert a one line summary here*
 %   [] = register_dual_camera_frames(varargin)
 %
@@ -102,19 +102,19 @@ if strcmp(range_type, 'time')
     end
 end
 
-num_ranges = size(ranges, 1);
+num_ranges = size(ranges1, 1);
 for i_rng = 1:num_ranges
     if strcmp(range_type, 'time')
         %Get frames from each camera in this time ranges
         include_frames1 = find(...
-            (times1 >= ranges(i_rng,1)) & (times1 < ranges(i_rng,2)) );
+            (times1 >= ranges1(i_rng,1)) & (times1 < ranges1(i_rng,2)) );
         include_frames2 = find(...
-            (times2 >= ranges(i_rng,1)) & (times2 < ranges(i_rng,2)) );
+            (times2 >= ranges2(i_rng,1)) & (times2 < ranges2(i_rng,2)) );
 
     else
         %Otherwise the ranges should just be the ith row of ranges
-        include_frames1 = ranges(i_rng,1):ranges(i_rng,2);
-        include_frames2 = ranges(i_rng,1):ranges(i_rng,2);
+        include_frames1 = ranges1(i_rng,1):ranges1(i_rng,2);
+        include_frames2 = ranges2(i_rng,1):ranges2(i_rng,2);
     end
     
     %Create mosaic for each camera
@@ -201,6 +201,10 @@ for i_rng = 1:num_ranges
         
         gmin_r = nanmin(registered_mosaics(registered_masks));
         gmax_r = nanmax(registered_mosaics(registered_masks));
+        
+        save([args.save_dir args.save_name 'difference_image' zerostr(i_rng, 3) '.mat'],...
+            'gmin', 'gmax', 'gmin_r', 'gmax_r', '-append');
+        
         reg_mosaic_rgb = 1-(registered_mosaics - gmin_r) / (gmax_r-gmin_r);
         reg_mosaic_rgb(~registered_masks) = 0;
         reg_mosaic_rgb(:,:,3) = 0;
