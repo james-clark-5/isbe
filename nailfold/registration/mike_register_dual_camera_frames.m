@@ -1,4 +1,4 @@
-function [] = register_dual_camera_frames(frames_dir, camera1_transforms, camera2_transforms, ranges, range_type, varargin)
+function [] = mike_register_dual_camera_frames(frames_dir, camera1_transforms, camera2_transforms, ranges, range_type, varargin)
 %REGISTER_DUAL_CAMERA_FRAMES *Insert a one line summary here*
 %   [] = register_dual_camera_frames(varargin)
 %
@@ -184,15 +184,23 @@ for i_rng = 1:num_ranges
     joint_mask = registered_masks(:,:,1) & registered_masks(:,:,2);
     registered_difference(~joint_mask) = NaN;
     
-    if args.save_images
+    gmin = nanmin(mosaic12(tile_mask12)); %get gmin & gmax before saving of .mat (so scaledBrightness image can be made)
+    gmax = nanmax(mosaic12(tile_mask12));
+    gmin_r = nanmin(registered_mosaics(registered_masks)); %
+    gmax_r = nanmax(registered_mosaics(registered_masks));
+    
+    if args.save_images % add gmin, gmax to save file 
         save([args.save_dir args.save_name 'difference_image' zerostr(i_rng, 3) '.mat'],...
             'mosaic12', 'tile_mask12', 'registered_difference', ...
-            'registered_mosaics', 'registered_masks', 'include_frames1', 'include_frames2');
+            'registered_mosaics', 'registered_masks', 'include_frames1', 'include_frames2',...
+            'gmin', 'gmax', 'gmin_r', 'gmax_r');
     end
+    
+    
     
     if args.display_output
         
-        gmin = nanmin(mosaic12(tile_mask12));
+        gmin = nanmin(mosaic12(tile_mask12)); %position gmin & gmax before saving of .mat
         gmax = nanmax(mosaic12(tile_mask12));
         
         mosaic_rgb = 1-(mosaic12 - gmin) / (gmax-gmin);

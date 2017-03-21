@@ -67,9 +67,9 @@ for iLoops = 1:numLoops
     elseif num_frames2 == 0
         error('No frames found for camera 1');
     elseif num_frames1 ~= num_frames2
-        error('Number of frames do not match');
+        %error('Number of frames do not match');
     end
-    num_frames = num_frames1; clear num_frames1 num_frames2;
+    num_frames = num_frames1; %clear num_frames1 num_frames2;
 
     if strcmp(range_type, 'time')
         %Get list of their times relative to the first frame of camera 1
@@ -188,11 +188,21 @@ for iLoops = 1:numLoops
         joint_mask = registered_masks(:,:,1) & registered_masks(:,:,2);
         registered_difference(~joint_mask) = NaN;
 
-        if args.save_images
-            save([args.save_dir args.save_name 'difference_image' zerostr(i_rng, 3) '.mat'],...
-                'mosaic12', 'tile_mask12', 'registered_difference', ...
-                'registered_mosaics', 'registered_masks', 'include_frames1', 'include_frames2');
-        end
+    gmin = nanmin(mosaic12(tile_mask12)); %get gmin & gmax before saving of .mat (so scaledBrightness image can be made)
+    gmax = nanmax(mosaic12(tile_mask12));
+    gmin_r = nanmin(registered_mosaics(registered_masks)); %
+    gmax_r = nanmax(registered_mosaics(registered_masks));
+    
+    save_name = 'difference_image_t2tf';
+    
+    if args.save_images % add gmin, gmax to save file 
+        save([args.save_dir save_name zerostr(i_rng, 3) '.mat'],...
+            'mosaic12', 'tile_mask12', 'registered_difference', ...
+            'registered_mosaics', 'registered_masks', 'include_frames1', 'include_frames2',...
+            'gmin', 'gmax', 'gmin_r', 'gmax_r');
+        fprintf('saved %d difference images',i_rng);
+    end
+    
 
         if args.display_output
 
@@ -216,41 +226,37 @@ for iLoops = 1:numLoops
             registered_difference = registered_difference * args.correction_factor; % jj apply correction factor
 
 
-% % % % % % %             %% registration images
-% % % % % % %             figure; 
-% % % % % % %             subplot(1,2,1); non_registered_image = imgray(mosaic_rgb); 
-% % % % % % %             title(sprintf('Non-overlapping compound frames pre-registration for %d nm filter', args.camera_filter));
-% % % % % % % 
-% % % % % % %             % Save the unregistered image
-% % % % % % %             fullfile_unreg = fullfile(args.frames_dir, '_Unregistered image'); 
-% % % % % % %             saveas(non_registered_image, fullfile_unreg, 'bmp'); %bmp
-% % % % % % %             saveas(non_registered_image, fullfile_unreg, 'meta'); %emf 
-% % % % % % %             saveas(non_registered_image, fullfile_unreg, 'fig'); %fig
-% % % % % % % 
-% % % % % % %             subplot(1,2,2); registered_image = imgray(reg_mosaic_rgb);
-% % % % % % %             title(sprintf('Aligned compound frames after registration for %d nm filter', args.camera_filter));
-% % % % % % %             % Save the registered image
-% % % % % % %             fullfile_reg = fullfile(args.frames_dir, '_Registered image');
-% % % % % % %             saveas(registered_image, fullfile_reg, 'bmp'); %bmp
-% % % % % % %             saveas(registered_image, fullfile_reg, 'meta'); %emf 
-% % % % % % %             saveas(registered_image, fullfile_reg, 'fig'); %fig
-% % % % % % % 
-% % % % % % %             %% difference image
-% % % % % % %             % NOT SURE IF THIS WILL WORK WITH COLORMAP & COLORBAR
-% % % % % % %             figure;
-% % % % % % %             difference_image = imgray(registered_difference);
-% % % % % % %             title(sprintf('Difference between compound frames for %d nm filter', args.camera_filter));
-% % % % % % %             colormap jet;
-% % % % % % %             colorbar;
-% % % % % % %             % Save the difference image
-% % % % % % %             fullfile_dif = fullfile(args.frames_dir, '_Difference image');
-% % % % % % %             saveas(difference_image, fullfile_dif, 'bmp'); %bmp
-% % % % % % %             saveas(difference_image, fullfile_dif, 'meta'); %emf 
-% % % % % % %             saveas(difference_image, fullfile_dif, 'fig'); %fig
-% % % % % % % 
-% % % % % % %             %% max and min of difference image
-% % % % % % %             % NOT SURE IF THIS WILL WORK WITH COLORMAP & COLORBAR
-% % % % % % %             %fprintf('Max of dif_image: %d\nMin of dif_image: %d\n',max(max(difference_image)),min(min(difference_image)));
+            %% registration images
+            figure; 
+            subplot(1,2,1); non_registered_image = imgray(mosaic_rgb); 
+            title(sprintf('Non-overlapping compound frames pre-registration for %d nm filter', args.camera_filter));
+
+            % Save the unregistered image
+            fullfile_unreg = fullfile(args.frames_dir, 'Unregistered image'); 
+            saveas(non_registered_image, fullfile_unreg, 'bmp'); %bmp
+            saveas(non_registered_image, fullfile_unreg, 'meta'); %emf 
+            saveas(non_registered_image, fullfile_unreg, 'fig'); %fig
+
+            subplot(1,2,2); registered_image = imgray(reg_mosaic_rgb);
+            title(sprintf('Aligned compound frames after registration for %d nm filter', args.camera_filter));
+            % Save the registered image
+            fullfile_reg = fullfile(args.frames_dir, 'Registered image');
+            saveas(registered_image, fullfile_reg, 'bmp'); %bmp
+            saveas(registered_image, fullfile_reg, 'meta'); %emf 
+            saveas(registered_image, fullfile_reg, 'fig'); %fig
+
+            %% difference image
+            % NOT SURE IF THIS WILL WORK WITH COLORMAP & COLORBAR
+            figure;
+            difference_image = imgray(registered_difference);
+            title(sprintf('Difference between compound frames for %d nm filter', args.camera_filter));
+            colormap jet;
+            colorbar;
+            % Save the difference image
+            fullfile_dif = fullfile(args.frames_dir, 'Difference image');
+            saveas(difference_image, fullfile_dif, 'bmp'); %bmp
+            saveas(difference_image, fullfile_dif, 'meta'); %emf 
+            saveas(difference_image, fullfile_dif, 'fig'); %fig
 
         end
     end

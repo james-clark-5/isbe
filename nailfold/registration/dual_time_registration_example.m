@@ -10,7 +10,7 @@ fprintf('Did you change the dirt frames folder? ~ line 32\n');
 addpath(genpath('C:\Users\MPhys2016\Documents\GitHub\isbe'));
 
 %Set folder containing all the frames
-frames_dir = 'C:\Users\MPhys2016\Desktop\17.02.27 occlusion compare 530 500\17.02.27 - 560 500 - exp60.04 g718\17.02.27 - exp60.04 g718 - Juliana - 500 cam2 t0t2\';
+frames_dir = 'C:\Users\MPhys2016\Desktop\Occlusion compare 530 500\17.03.07 occlusion compare 530 500\trial 10 jam LH fing4\17.03.07 - exp60.04 g860 - 530 cam1 - t2tf2\';
 
 %% jj attempt to create folder to save images to
 % mkdir(frames_dir,'OurSavedImages')
@@ -22,12 +22,12 @@ frames_dir = 'C:\Users\MPhys2016\Desktop\17.02.27 occlusion compare 530 500\17.0
 %OurSavedImagesDir = frames_dir\
 %% 
 %jj wavelength of filter for images
-filter_wavelength = 500; %jj change this when filter changes
+filter_wavelength = 530; %jj change this when filter changes
 trial_number = 1;
 
 %Make dirt image
 %You want to use the (out-of-focus) frames you captured especially for this
-dirty_dir = 'C:\Users\MPhys2016\Desktop\17.02.27 occlusion compare 530 500\17.02.27 - 560 500 - exp60.04 g718\17.02.27 - exp60.04 g718 - 500 cam2 dirt\'; %
+dirty_dir = 'C:\Users\MPhys2016\Desktop\Occlusion compare 530 500\17.03.07 occlusion compare 530 500\trial 10 jam LH fing4\17.03.07 530 nm cam 1 dirt\'; %
 [dirt_image] = make_dirt_image(dirty_dir);
 figure; imgray(dirt_image); colorbar;
 title(sprintf('Normalised compound dirt image for %d nm filter, part of trial %d', filter_wavelength,trial_number));
@@ -57,8 +57,8 @@ title(sprintf('Normalised compound dirt image for %d nm filter, part of trial %d
 % watching the registration in real-time to check frames are being matched
 % appropriately
 prepare_sequential_camera_frames(frames_dir, ... 
-    'time1_ext', '_t0_',...
-    'time2_ext', '_t2_',...
+    'time1_ext', '_t2_',...
+    'time2_ext', '_tf_',...
     'image_format', 'bmp',...
     'dirt_image', dirt_image,...
     'theta_range', 0,...
@@ -91,4 +91,5 @@ register_time_camera_frames([frames_dir 'corrections\'],...
     'offset_range', 240,...
     'save_images', 1, ...,
     'save_dir', [frames_dir 'difference_images_f\']);
+
 %%
