@@ -1,5 +1,5 @@
 %testing_meanDifImg_multiFolder
-function [regDif_meanBrightness_array] = testing_meanDifImg_multiFolder(frames_dir)
+function [regDif_meanBrightness_array] = testing_meanDifImg_multiFolder_working(frames_dir)
 
 % get mat files from directory
 difImg_dir = [frames_dir 'difference_images_f\']; 

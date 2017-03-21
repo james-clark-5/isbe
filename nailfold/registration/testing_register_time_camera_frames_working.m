@@ -1,4 +1,4 @@
-function [] = testing_register_time_camera_frames(frames_dir, camera1_transforms, camera2_transforms, ranges, range_type, varargin)
+function [] = testing_register_time_camera_frames_working(frames_dir, camera1_transforms, camera2_transforms, ranges, range_type, varargin)
 %REGISTER_DUAL_CAMERA_FRAMES *Insert a one line summary here*
 %   [] = register_dual_camera_frames(varargin)
 %
@@ -190,13 +190,19 @@ for iLoops = 1:numLoops % 1:numLoops, if doing a whole analysis
         registered_difference(~joint_mask) = NaN;
 
         % create difference image name
-        difference_mat_name = strcat('difference_image_t2tf',zerostr(iLoops, 3)) ;
+        %difference_mat_name = strcat('difference_image_t2tf',zerostr(iLoops, 3)) ;
         
-        if args.save_images
-            save([args.save_dir args.save_name difference_mat_name '.mat'],...
-                'mosaic12', 'tile_mask12', 'registered_difference', ...
-                'registered_mosaics', 'registered_masks', 'include_frames1', 'include_frames2');
-        end
+    if args.save_images % add gmin, gmax to save file 
+        gmin = nanmin(mosaic12(tile_mask12)); %get gmin & gmax before saving of .mat (so scaledBrightness image can be made)
+        gmax = nanmax(mosaic12(tile_mask12));
+        gmin_r = nanmin(registered_mosaics(registered_masks)); %
+        gmax_r = nanmax(registered_mosaics(registered_masks));
+        
+        save([args.save_dir 'difference_image_t2tf' zerostr(iLoops, 3) '.mat'],...
+            'mosaic12', 'tile_mask12', 'registered_difference', ...
+            'registered_mosaics', 'registered_masks', 'include_frames1', 'include_frames2',...
+            'gmin', 'gmax', 'gmin_r', 'gmax_r');
+    end
 
         if args.display_output
 

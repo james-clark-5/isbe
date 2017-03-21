@@ -1,4 +1,4 @@
-function [] = testing_prepare_sequential_camera_frames(frames_dir, varargin)
+function [] = testing_prepare_sequential_camera_frames_working(frames_dir, varargin)
 %REGISTER_DUAL_CAMERA_FRAMES *Insert a one line summary here*
 %   [] = register_dual_camera_frames(varargin)
 %
