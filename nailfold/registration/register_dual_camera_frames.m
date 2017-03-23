@@ -212,13 +212,13 @@ for i_rng = 1:num_ranges
         
         figure;
         subplot(1,2,1); imgray(mosaic_rgb);
-        title(sprintf('Non-overlapping compound frames pre-registration, %d nm', args.camera_filter));
+        title(sprintf('Non-overlapping compound frames pre-registration, %s nm', args.camera_filter));
         subplot(1,2,2); imgray(reg_mosaic_rgb);
-        title(sprintf('Aligned compound frames after registration, %d nm', args.camera_filter));
+        title(sprintf('Aligned compound frames after registration, %s nm', args.camera_filter));
         
         figure;
         imgray(registered_difference);
-        title(sprintf('Difference between compound frames, %d nm filter', args.camera_filter));
+        title(sprintf('Difference between compound frames, %s nm filter', args.camera_filter));
         colormap jet;
         colorbar;
     end
