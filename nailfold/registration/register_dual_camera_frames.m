@@ -130,7 +130,7 @@ for i_rng = 1:num_ranges
     %smaller
     [nrows1 ncols1] = size(mosaic1);
     [nrows2 ncols2] = size(mosaic2);
-    
+                                                         
     if nrows1 < nrows2
         mosaic1(nrows2, :) = 0;
         tile_mask1(nrows2, :) = 0;
