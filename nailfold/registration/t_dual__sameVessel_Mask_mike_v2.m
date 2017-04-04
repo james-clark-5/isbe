@@ -1,0 +1,134 @@
+%% load code
+addpath(genpath('C:\Users\MPhys2016\Documents\GitHub\isbe'));
+frames_dir = 'C:\Users\MPhys2016\Desktop\tf_split_testing\_testing_17.02.27 - exp60.04 g718 - Juliana - 560 500 cam1 t2tf\';
+
+d0 = load(fullfile(frames_dir, 'difference_images_f\', 'difference_image_t2tf001'));
+ 
+figure; difference_image = imgray(d0.registered_difference); % load grey image for using roipoly on, from d0
+vessel_mask_d0 = roipoly; %Display image and allows you to interactively select region-of-interest
+% if you want to get multiple vessels:
+%vessel_mask = vessel_mask1 | vessel_mask2; % create overalls vessel mask
+% imshow(vessel_mask); % displays mask OK
+ 
+% load in a few "inputs" for register_tiles_features(mosaic12,...)
+   theta_range =  -15:3:15; ...
+   offset_range = 240;
+   sigma =  8;
+   debug =  false;
+
+ for dif_img_time_i = 1 %loop over difference images
+     %  CHANGE TO = 1:2 (OR 1:3 WHEN USING TF)
+     if (dif_img_time_i == 1)
+        d1 = load(fullfile(frames_dir, 'difference_images_f\', 'difference_image_t2tf002'));
+     end
+     if (dif_img_time_i == 2)
+        d1 = load(fullfile(frames_dir, 'difference_images_f\', 'difference_image_t2tf003'));
+     end
+     % do this for a tf dualdif image too
+
+     mosaic1 = d0.registered_mosaics(:,:,1); % e.g. t0,530 compound image
+     mosaic2 = d1.registered_mosaics(:,:,1); % e.g. t1,530 compound image
+     tile_mask1 = d0.registered_masks(:,:,1); % e.g. t0,530 & t0,560 overlapping area only
+     tile_mask2 = d1.registered_masks(:,:,1); % e.g. t1,530 & t1,560 overlapping area only
+
+    %Get the relative sizes of the two mosaics, increase the size of the
+    %smaller
+    [nrows1 ncols1] = size(mosaic1);
+    [nrows2 ncols2] = size(mosaic2);
+
+    % resize mosaics and tile masks
+    if nrows1 < nrows2
+        mosaic1(nrows2, :) = 0;
+        tile_mask1(nrows2, :) = 0;
+    elseif nrows1 > nrows2
+        mosaic2(nrows1, :) = 0;
+        tile_mask2(nrows1, :) = 0;
+    end
+
+    if ncols1 < ncols2
+        mosaic1(:, ncols2) = 0;
+        tile_mask1(:, ncols2) = 0;
+    elseif ncols1 > ncols2
+        mosaic2(:, ncols1) = 0;
+        tile_mask2(:, ncols1) = 0;
+    end
+    tile_sz = size(mosaic1);
+
+    %Register the two mosaics
+    mosaic12 = cat(3, mosaic1, mosaic2);
+    tile_mask12 = cat(3, tile_mask1, tile_mask2);
+        
+    [frame_transforms] = register_tiles_features(mosaic12, ... 
+        'tile_masks', tile_mask12,...
+        'theta_range', theta_range, ...
+        'offset_lim', offset_range, ...
+        'sigma', sigma,...
+        'debug', debug);
+
+    % get mosaic_sz, rename a variable (frame_transforms) so it doesn't
+    % get overwritten
+    % Get size of the combined reference frame
+    [mosaic_sz, frame_transformsIGNORE] = mosaic_limits(tile_sz, frame_transforms);
+    
+    %if vessel mask defined on d0
+    [vessel_mask_d1] = sample_tile_image(...
+            {double(vessel_mask_d0)}, ones(tile_sz), ...
+            frame_transforms(:,:,2), ...
+            mosaic_sz, []);
+        
+    % mike commented this out 
+    % %else if vessel mask defined on d1
+    % [vessel_mask_d0] = sample_tile_image(...
+    %         {double(vessel_mask)}, ones(tile_sz), ...
+    %         inv(frame_transforms(:,:,2)), ...
+    %         mosaic_sz, []);    
+    
+    
+  
+    % save vessel_mask_d1
+    filename2save = strcat('vessel_mask_d',num2str(dif_img_time_i),'.mat');
+    save([fullfile(frames_dir, 'difference_images_f\', filename2save)],...
+            'vessel_mask_d1');
+    
+    %use vessel mask to get summary stats from d1 difference image
+    
+
+    
+    vessel_mask_d1_asARRAY = cell2mat(vessel_mask_d1);
+    vessel_mask_d1_asARRAY(isnan(vessel_mask_d1_asARRAY))=0;
+    % make d1 mask same size as d1.registereed difference
+    
+     %adjust mask so that it covers the same region on both tiles
+         
+    x0_t0 = frame_transforms(1,3,1);
+    y0_t0 = frame_transforms(2,3,1); 
+    % !!! TO DO: does t0 have zero x0 y0? Want to make mask on tile with
+    % zero x0, y0 (ideally t0) and use second tile's nonzero x0 y0 to shift
+    % mask
+    
+    %second time frame dual image's shift:
+    x0_t1 = frame_transforms(1,3,2);
+    y0_t1 = frame_transforms(2,3,2); 
+    
+    shift_x = abs(x0_t1 - x0_t0);        %TO DO: think use absolute value because shift is always positive???
+    shift_y = abs(y0_t1 - y0_t0);
+         
+         
+    mask_adjusted = padarray(vessel_mask_d1_asARRAY,[shift_y shift_x], 0 ,'pre');
+    [nrows_di ncols_di] = size(d1.registered_difference);
+    [nrows_vm ncols_vm] = size(vessel_mask_d1_asARRAY);
+    
+    if (nrows_vm > nrows_di) || (ncols_vm > ncols_di) 
+        mask_adjusted(nrows_di + 1:nrows_vm,:) = [];
+        mask_adjusted(ncols_di + 1:ncols_vm,:) = [];
+    end
+    
+    if (nrows_vm < nrows_di) || (ncols_vm < ncols_di)
+            mask_adjusted(nrows_di, ncols_di) = 0;
+    end    
+    
+    
+    mean_val_d0 = nanmean(d0.registered_difference(vessel_mask_d0)); % get mean of vessel_mask'd region
+    mean_val_d1 = nanmean(d1.registered_difference(vessel_mask_d1_asARRAY)); % get mean of vessel_mask'd region
+    
+ end

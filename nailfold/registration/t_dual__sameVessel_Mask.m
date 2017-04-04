@@ -101,7 +101,7 @@ camera2_transforms = u_load([frames_dir 'transforms\time2_reg_transforms.mat']);
     shift_x = abs(x0_2 - x0_t0);        %TO DO: think use absolute value because shift is always positive???
     shift_y = abs(y0_2 - y0_t0);
     
-    %%
+   
     %adjust mask so that it covers the same region on both tiles
     mask_adjusted = padarray(mask,[y0 x0], 0 ,'pre');
     [nrows_di ncols_di] = size(difference_image);
