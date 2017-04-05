@@ -17,20 +17,53 @@ vessel_mask_d0 = roipoly; %Display image and allows you to interactively select 
    debug =  false;
 
  for dif_img_time_i = 1 %loop over difference images
-     %  CHANGE TO = 1:2 (OR 1:3 WHEN USING TF)
+      %CHANGE TO = 1:2 (OR 1:3 WHEN USING TF)
      if (dif_img_time_i == 1)
-        d1 = load(fullfile(frames_dir, 'difference_images_f\', 'difference_image_t2tf002'));
+        d1 = load(fullfile(frames_dir, 'difference_images_f\', 'difference_image_t2tf001'));
      end
+
      if (dif_img_time_i == 2)
-        d1 = load(fullfile(frames_dir, 'difference_images_f\', 'difference_image_t2tf003'));
+       d1 = load(fullfile(frames_dir, 'difference_images_f\', 'difference_image_t2tf003'));
      end
-     % do this for a tf dualdif image too
+     
+
+    
+    
+     %do this for a tf dualdif image too
 
      mosaic1 = d0.registered_mosaics(:,:,1); % e.g. t0,530 compound image
      mosaic2 = d1.registered_mosaics(:,:,1); % e.g. t1,530 compound image
      tile_mask1 = d0.registered_masks(:,:,1); % e.g. t0,530 & t0,560 overlapping area only
      tile_mask2 = d1.registered_masks(:,:,1); % e.g. t1,530 & t1,560 overlapping area only
 
+     % TESTING TO SEE IF PADDING 1 IMAGE (2 IMAGES SAME) GIVES EQUAL FINAL
+     % RESULTS
+     % pad top left
+    mosaic2 = padarray(mosaic2,[25 50], 0 ,'pre');
+    % "antipad" bottom right
+    [nrows_mos1 ncols_mos1] = size(mosaic1);
+    % remove from top left, requires 'post' in above
+%      mosaic2(1:25,:)= [];
+%      mosaic2(:,1:50) = [];
+            % remove from top right, requires 'pre' in above
+            mosaic2(nrows_mos1 + 1:end,:)= [];
+            mosaic2(:,ncols_mos1 +1:end) = [];
+    
+    tile_mask2 = padarray(tile_mask2,[25 50], 0 ,'pre');
+    % "antipad" bottom right
+    [nrows_tilemask1 ncols_tilemask1] = size(tile_mask1);
+    % remove from top left, requires 'post' in above
+%      tile_mask2(1:25,:)= [];
+%      tile_mask2(:,1:50) = [];
+        % remove from bottom right, requires 'pre' in above
+        tile_mask2(nrows_tilemask1 + 1:end,:)= [];
+        tile_mask2(:,ncols_tilemask1 +1:end) = [];
+    
+    
+            %testing  
+    figure; imgray(mosaic1.*vessel_mask_d0); title('d0 mosaic initial');
+    figure; imgray(mosaic2.*vessel_mask_d0); title('d1 mosaic initial');
+        
     %Get the relative sizes of the two mosaics, increase the size of the
     %smaller
     [nrows1 ncols1] = size(mosaic1);
@@ -85,7 +118,7 @@ vessel_mask_d0 = roipoly; %Display image and allows you to interactively select 
     
     
   
-    % save vessel_mask_d1
+    %save vessel_mask_d1
     filename2save = strcat('vessel_mask_d',num2str(dif_img_time_i),'.mat');
     save([fullfile(frames_dir, 'difference_images_f\', filename2save)],...
             'vessel_mask_d1');
@@ -110,17 +143,25 @@ vessel_mask_d0 = roipoly; %Display image and allows you to interactively select 
     x0_t1 = frame_transforms(1,3,2);
     y0_t1 = frame_transforms(2,3,2); 
     
-    shift_x = abs(x0_t1 - x0_t0);        %TO DO: think use absolute value because shift is always positive???
-    shift_y = abs(y0_t1 - y0_t0);
-         
-         
+    shift_x = (x0_t1 - x0_t0);        %TO DO: think use absolute value because shift is always positive???
+    shift_y = (y0_t1 - y0_t0);
+      
+    %testing loop idea
+    if (shift_x >0 && shift_y>0)    
     mask_adjusted = padarray(vessel_mask_d1_asARRAY,[shift_y shift_x], 0 ,'pre');
+    end
+    
+    %Testing
+    %if (shift_x < 0 && shift_y < 0)    
+    %mask_adjusted = padarray(vessel_mask_d1_asARRAY,[-shift_y -shift_x], 0 ,'pre');
+    %end
+    
     [nrows_di ncols_di] = size(d1.registered_difference);
     [nrows_vm ncols_vm] = size(vessel_mask_d1_asARRAY);
     
     if (nrows_vm > nrows_di) || (ncols_vm > ncols_di) 
-        mask_adjusted(nrows_di + 1:nrows_vm,:) = [];
-        mask_adjusted(ncols_di + 1:ncols_vm,:) = [];
+        mask_adjusted(nrows_di + 1:end,:)= [];
+        mask_adjusted(:,ncols_di +1:end) = [];
     end
     
     if (nrows_vm < nrows_di) || (ncols_vm < ncols_di)
@@ -129,6 +170,13 @@ vessel_mask_d0 = roipoly; %Display image and allows you to interactively select 
     
     
     mean_val_d0 = nanmean(d0.registered_difference(vessel_mask_d0)); % get mean of vessel_mask'd region
-    mean_val_d1 = nanmean(d1.registered_difference(vessel_mask_d1_asARRAY)); % get mean of vessel_mask'd region
+    mean_val_d1 = nanmean(d1.registered_difference(logical(mask_adjusted))); % get mean of vessel_mask'd region
+   
+    
+    fprintf('The mean value for the selected ROI is %f for d0\n',mean_val_d0);
+    fprintf('The mean value for the selected ROI is %f for d1\n',mean_val_d1);
+    
+    figure; imgray(d0.registered_difference.*vessel_mask_d0); title('d0 final');
+    figure; imgray(d1.registered_difference.*logical(mask_adjusted)); title('d1 final');
     
  end
