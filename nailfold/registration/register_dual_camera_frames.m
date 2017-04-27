@@ -26,8 +26,8 @@ function [] = register_dual_camera_frames(frames_dir, camera1_transforms, camera
 % Copyright: (C) University of Manchester 
 % Unpack the arguments:
 args = u_packargs(varargin, '0', ...
-    'camera1_ext', '_C_560_',... %jj changed this for Dual Camera
-    'camera2_ext', '_C_530_',...
+    'camera1_ext', '_C_1_',... %jj changed this for Dual Camera
+    'camera2_ext', '_C_2_',...
     'camera_filter', '? nm',... %sets the default value
     'image_format', 'bmp',...
     'save_images', 1,...
@@ -213,14 +213,28 @@ for i_rng = 1:num_ranges
         figure;
         subplot(1,2,1); imgray(mosaic_rgb);
         title(sprintf('Non-overlapping compound frames pre-registration, %s nm', args.camera_filter));
-        subplot(1,2,2); imgray(reg_mosaic_rgb);
+        subplot(1,2,2); registered_image = imgray(reg_mosaic_rgb);
         title(sprintf('Aligned compound frames after registration, %s nm', args.camera_filter));
-        
+              
+        % Save the registered image
+        fullfile_reg = fullfile(frames_dir, '_registration');
+        saveas(registered_image, fullfile_reg, 'bmp'); %bmp
+        saveas(registered_image, fullfile_reg, 'meta'); %emf 
+        saveas(registered_image, fullfile_reg, 'fig'); %fig
+
+      
         figure;
-        imgray(registered_difference);
+        difference_image = imgray(registered_difference);
         title(sprintf('Difference between compound frames, %s nm filter', args.camera_filter));
         colormap jet;
         colorbar;
+        % Save the difference image
+        fullfile_dif = fullfile(frames_dir, '_differenceImage');
+        saveas(difference_image, fullfile_dif, 'bmp'); %bmp
+        saveas(difference_image, fullfile_dif, 'meta'); %emf 
+        saveas(difference_image, fullfile_dif, 'fig'); %fig
+        
+        
     end
 end
                             
