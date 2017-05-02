@@ -121,6 +121,7 @@ for i_rng = 1:num_ranges
         camera1_transforms(:,:,include_frames1), 'uniform');    
     tile_mask1 = weights1 == length(include_frames1);
     
+    
     [mosaic2, weights2] = create_mosaic(...
         fullfile(frames_dir, camera2_frame_names(include_frames2)),...
         camera2_transforms(:,:,include_frames2), 'uniform');
@@ -163,6 +164,7 @@ for i_rng = 1:num_ranges
     
     registered_mosaics = zeros(mosaic_sz(1), mosaic_sz(2), 2);
     registered_masks = false(mosaic_sz(1), mosaic_sz(2), 2);
+    
     for i_cam = 1:2
         
         [tile_out] = sample_tile_image(...
